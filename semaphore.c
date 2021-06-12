@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
+#include <time.h>
 
 int semid;
 
@@ -76,6 +77,11 @@ void *mythread(void *arg)
                                                                              
 int main(int argc, char *argv[])
 {                    
+	// using clock function to measure execution time
+	clock_t start, end;
+	float time;
+	start = clock();
+
 	loop_cnt = atoi(argv[1]);
 	union semun su;
 
@@ -109,6 +115,10 @@ int main(int argc, char *argv[])
 		 printf("semctl() fail\n");
 		 exit(0);
 	}
+
+	end = clock();
+	time = (float)(end - start)/CLOCKS_PER_SEC;
+	printf("Execution time for semaphore : %.3f \n", time);
 
 	return 0;
 }

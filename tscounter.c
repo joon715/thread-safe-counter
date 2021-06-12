@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <time.h>
 
 typedef struct __counter_t {
     int value;
@@ -51,17 +52,26 @@ void *mythread(void *arg)
                                                                              
 int main(int argc, char *argv[])
 {                    
-    loop_cnt = atoi(argv[1]);
+	clock_t start, end;
+	float time;
+	start = clock();
 
-    init(&counter);
+	loop_cnt = atoi(argv[1]);
 
-    pthread_t p1, p2;
-    printf("main: begin [counter = %d]\n", get(&counter));
-    pthread_create(&p1, NULL, mythread, "A"); 
-    pthread_create(&p2, NULL, mythread, "B");
-    // join waits for the threads to finish
-    pthread_join(p1, NULL); 
-    pthread_join(p2, NULL); 
-    printf("main: done [counter: %d] [should be: %d]\n", get(&counter), loop_cnt * 2);
-    return 0;
+	init(&counter);
+
+	pthread_t p1, p2;
+	printf("main: begin [counter = %d]\n", get(&counter));
+	pthread_create(&p1, NULL, mythread, "A"); 
+	pthread_create(&p2, NULL, mythread, "B");
+	// join waits for the threads to finish
+	pthread_join(p1, NULL); 
+	pthread_join(p2, NULL); 
+	printf("main: done [counter: %d] [should be: %d]\n", get(&counter), loop_cnt * 2);
+
+	end = clock();
+	time = (float)(end - start)/CLOCKS_PER_SEC;
+	printf("Execution time for Mutex : %.3f \n", time);
+
+	return 0;
 }
